@@ -178,7 +178,7 @@ All SLR validation scripts require:
 
 ### 4. Code to be used with GHOST SLRRES
 
-Code within GHOST_code/ is intended for use with the GHOST SLRRES software. Provided are 5 files:
+Code within ghost_code/ is intended for use with the GHOST SLRRES software. Provided are 5 files:
 
 - run_slrkin_swarm_folder: This runs SLRRES for every .SP3k orbit within the define folder. Usage:
   ```bash
