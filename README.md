@@ -60,6 +60,12 @@ gravtools/
 │   ├── slr_variance_validation.py        # LOS projection + uncertainty validation + output plotting
 │   ├── variance_validation_plotting.py   # Plot functions for variance validation
 │   └── sinex_station_loader.py           # Parses SINEX station info
+├── ghost_code/
+│   ├── run_slrkin_swarm_folder           # Runs SLRRES for all orbits in a designated folder
+│   ├── normal_points_extraction          # Retrieves normal points from the SLRRES log files
+│   ├── SWARMA_SLRRES                     # SLRRES input folder for Swarm A
+│   ├── SWARMB_SLRRES                     # SLRRES input folder for Swarm B
+│   └── SWARMC_SLRRES                     # SLRRES input folder for Swarm C
 ├── data/
 │   ├── orbits/
 │   │   ├── KO/
@@ -169,6 +175,22 @@ All SLR validation scripts require:
 - SINEX file for station coordinates (provided in repository for the test period defined in `slr_variance_validation.py`. The user may add additional manually.)
 
 ---
+
+### 4. Code to be used with GHOST SLRRES
+
+Code within GHOST_code/ is intended for use with the GHOST SLRRES software. Provided are 5 files:
+
+- run_slrkin_swarm_folder: This runs SLRRES for every .SP3k orbit within the define folder. Usage:
+  ```bash
+  "run_slrkin_swarm_folder" <folder containing input orbits> <output dir> <Sat ID (A, B or C)>
+  ```
+- normal_points_extraction: This processes all the output SLRRES .log files, retrieves all normal points and aggregates them in a .csv. Usage:
+  ```bash
+  "normal_points_extraction" <dir containing SLRRES results> <output dir>
+  ```
+- SWARMA_SLLRES: Input definition for Swarm A
+- SWARMB_SLLRES: Input definition for Swarm B
+- SWARMC_SLLRES: Input definition for Swarm C
 
 ## Implemented Methods
 

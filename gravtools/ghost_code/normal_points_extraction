@@ -1,0 +1,186 @@
+#!/bin/bash
+
+# Script to extract SLR residuals statistics and all normal points
+
+# Check if the correct number of arguments is provided
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 input_directory output_directory"
+    exit 1
+fi
+
+# Define input and output directories
+input_dir="$1"
+output_dir="$2"
+
+# Check if the input directory exists
+if [ ! -d "$input_dir" ]; then
+    echo "Error: Input directory $input_dir does not exist."
+    exit 1
+fi
+
+# Create output directory if it doesn't exist
+mkdir -p "$output_dir"
+
+# Define output CSV files
+daily_output="$output_dir/daily_residuals.csv"
+station_output="$output_dir/station_residuals.csv"
+normal_points_output="$output_dir/all_normal_points.csv"  # CSV file for all normal points
+
+# List of stations to include
+stations=(
+    "Arequipa" "Borowiec" "Graz" "Hartebeest" "Herstmonce" "Simosato" "Yarragadee"
+    "Altay" "Arkhyz" "Badary" "Beijing" "Brazilia" "Changchun" "Grasse" "Irkutsk"
+    "Katzively" "Kiev" "Komsomolsk" "Mcdonald" "Mendeleev2" "Papeete" "Riga"
+    "San Fernan" "Sejong" "Simeiz" "Svetloe" "Zelenchuks" "Greenbelt" "Haleakala"
+    "Matera" "Monument P" "Mount Stro" "Potsdam" "Shanghai" "Wettzell" "Zimmerwald"
+    "Kunming"
+)
+
+# Determine the length of the longest station name
+max_length=0
+for station in "${stations[@]}"; do
+    if [ ${#station} -gt $max_length ]; then
+        max_length=${#station}
+    fi
+done
+
+# Write headers to the CSV files
+echo "Date,DoY,Satellite_ID,Method,Reference_Data,Analysis_Centre,Week/D,N,Mean (mm),StdDev (mm),RMS (mm)" > "$daily_output"
+echo "Date,DoY,Satellite_ID,Method,Reference_Data,Analysis_Centre,Station,Station_code,SOD,N,Mean (mm),StdDev (mm),RMS (mm)" > "$station_output"
+echo "Date,IntSatID,Pass,SOD,Site,Range [m],Win[s],n,rms[m],Az/El Sta,Sta [deg],Az/El LRA,LRA [deg],beta,mu [deg],gamma,Res[m],rej,Method,Reference_Data,Satellite_ID,Analysis_Centre,Date_DOY" > "$normal_points_output"  # Header for normal points CSV
+
+# Process each log file in the input directory
+for logfile in "$input_dir"/*.log*; do
+    echo "Processing $logfile..."
+
+    # Check if the file is empty
+    if [ ! -s "$logfile" ]; then
+        echo "Skipping empty file: $logfile"
+        continue
+    fi
+
+    # Extract the filename without the path
+    filename=$(basename "$logfile")
+
+    # Split the filename into parts using underscores
+    IFS='_' read -r -a parts <<< "$filename"
+
+    # Extract method, reference_data, satellite ID, analysis centre, and date_doy
+    method=${parts[1]}           # ORBIT_TYPE
+    reference_data=${parts[2]}   # REF_DATA
+    satellite_id=${parts[3]}     # SAT_ID
+    analysis_centre=${parts[4]}  # AC
+    date_doy=${parts[5]}         # DATE_DOY
+
+    # Extract year and day of year (DoY)
+    year=${date_doy:0:4}
+    doy=${date_doy:4:3}
+
+    # Validate year
+    if [[ $year -lt 1900 || $year -gt 2100 ]]; then
+        echo "Invalid year in filename: $filename"
+        continue
+    fi
+
+    # Convert DoY to a proper date (YYYY/MM/DD)
+    date=$(date -d "${year}-01-01 +${doy} days -1 day" +"%Y/%m/%d")
+
+    # Extract Daily Residuals Statistics
+    awk -v date="$date" -v doy="$doy" -v satellite_id="$satellite_id" -v method="$method" -v reference_data="$reference_data" -v analysis_centre="$analysis_centre" '
+    /Daily residuals statistics/,/Total/ {
+        if ($1 ~ /^[0-9]{4}\/[0-9]{2}\/[0-9]{2}/) {
+            week_d=$3
+            n=$4
+            mean=$5
+            stddev=$6
+            rms=$7
+            print date "," doy "," satellite_id "," method "," reference_data "," analysis_centre "," week_d "," n "," mean "," stddev "," rms >> "'"$daily_output"'"
+        }
+    }
+    ' "$logfile"
+
+    # Extract Station-wise Residuals Statistics
+    awk -v date="$date" -v doy="$doy" -v satellite_id="$satellite_id" -v method="$method" -v reference_data="$reference_data" -v analysis_centre="$analysis_centre" -v max_length="$max_length" '
+    BEGIN {
+        # Convert the stations array into a pattern for matching
+        stations_pattern = "Arequipa|Borowiec|Graz|Hartebeest|Herstmonce|Simosato|Yarragadee|Altay|Arkhyz|Badary|Beijing|Brazilia|Changchun|Grasse|Irkutsk|Katzively|Kiev|Komsomolsk|Mcdonald|Mendeleev2|Papeete|Riga|San Fernan|Sejong|Simeiz|Svetloe|Zelenchuks|Greenbelt|Haleakala|Matera|Monument P|Mount Stro|Potsdam|Shanghai|Wettzell|Zimmerwald|Kunming"
+    }
+    /Station-wise residuals statistics/,/Total/ {
+        # Use a regex to handle station names with spaces
+        if ($0 ~ /^[A-Za-z]/) {
+            # Extract the first max_length characters as the station name
+            station = substr($0, 1, max_length)
+            gsub(/ +$/, "", station)  # Trim trailing spaces
+
+            # Extract the remaining part of the line
+            remaining = substr($0, max_length + 1)
+
+            # Split the remaining part by spaces to get station code, SOD, and statistics
+            split(remaining, fields, " ")
+            station_code = fields[1]
+            SOD = fields[2]
+            n = fields[3]
+            mean = fields[4]
+            stddev = fields[5]
+            rms = fields[6]
+
+            # Check if the station is in the list of stations to include
+            if (station ~ stations_pattern) {
+                print date "," doy "," satellite_id "," method "," reference_data "," analysis_centre "," station "," station_code "," SOD "," n "," mean "," stddev "," rms >> "'"$station_output.tmp"'"
+            }
+        }
+    }
+    ' "$logfile"
+
+    # Extract All Normal Points
+    awk -v date="$date" -v doy="$doy" -v method="$method" -v reference_data="$reference_data" -v satellite_id="$satellite_id" -v analysis_centre="$analysis_centre" -v date_doy="$date_doy" '
+    /^[0-9]{4}\/[0-9]{2}\/[0-9]{2}/ {
+        # Skip the Daily Residuals Statistics line
+        if ($0 ~ /Daily residuals statistics/) {
+            next
+        }
+
+        # Skip lines that match the Daily Residuals Statistics format (e.g., "2023/04/01    91   2255/6    35    -5.8    8.6    10.4")
+        if ($3 ~ /^[0-9]+\/[0-9]+$/) {
+            next
+        }
+
+        # Extract the entire line
+        line = $0
+
+        # Extract fields using fixed-width parsing
+        date_utc = substr(line, 1, 25)  # Date and UTC time
+        int_sat_id = substr(line, 27, 7)  # IntSatID
+        pass = substr(line, 36, 4)  # Pass
+        sod = substr(line, 42, 8)  # SOD
+        site = substr(line, 52, 15)  # Site (fixed width)
+        range_m = substr(line, 68, 11)  # Range [m]
+        win_s = substr(line, 81, 5)  # Win[s]
+        n = substr(line, 88, 4)  # n
+        rms_m = substr(line, 93, 7)  # rms[m]
+        az_el_sta = substr(line, 101, 7)  # Az/El Sta
+        sta_deg = substr(line, 109, 7)  # Sta [deg]
+        az_el_lra = substr(line, 117, 7)  # Az/El LRA
+        lra_deg = substr(line, 125, 7)  # LRA [deg]
+        beta = substr(line, 133, 7)  # beta
+        mu_deg = substr(line, 141, 8)  # mu [deg]
+        gamma = substr(line, 150, 7)  # gamma
+        res_m = substr(line, 158, 7)  # Res[m]
+        rej = substr(line, 166, 3)  # rej (either . or *)
+
+        # Print the extracted fields along with method, reference_data, satellite_id, analysis_centre, and date_doy
+        print date_utc "," int_sat_id "," pass "," sod "," site "," range_m "," win_s "," n "," rms_m "," az_el_sta "," sta_deg "," az_el_lra "," lra_deg "," beta "," mu_deg "," gamma "," res_m "," rej "," method "," reference_data "," satellite_id "," analysis_centre "," date_doy >> "'"$normal_points_output"'"
+    }
+    ' "$logfile"
+done
+
+# Sort the station-wise residuals by Station (primary) and Method (secondary)
+if [ -f "$station_output.tmp" ]; then
+    sort -t, -k6,6 -k4,4 "$station_output.tmp" >> "$station_output"
+    rm -f "$station_output.tmp"
+fi
+
+echo "Extraction complete. Results saved to:"
+echo "- Daily residuals: $daily_output"
+echo "- Station-wise residuals: $station_output"
+echo "- All normal points: $normal_points_output"

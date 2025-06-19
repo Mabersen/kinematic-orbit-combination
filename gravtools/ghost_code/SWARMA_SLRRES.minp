@@ -1,0 +1,105 @@
+%
+% Configuration file for SLR residuals tool
+%
+
+  TITLE                 Swarm-A POD
+
+% SLR input file
+
+  SLR_FILE              <DIRECTORY CONTAINING SLR OBSERVATIONS>/Data/SA_{yyyy}{mm}.dgfi
+  SLR_FILE              <DIRECTORY CONTAINING SLR OBSERVATIONS>/Data/SA_{yyyy}{mm+1}.dgfi
+  SLR_FILE              <DIRECTORY CONTAINING SLR OBSERVATIONS>/Data/SA_{yyyy}{mm}.cddis
+  SLR_FILE              <DIRECTORY CONTAINING SLR OBSERVATIONS>/Data/SA_{yyyy}{mm+1}.cddis
+  SLR_START             {yyyy}/{mm}/{dd}  00:00:00.000
+  SLR_END               {yyyy}/{mm}/{dd}  24:00:00.000
+
+% LEO orbit
+
+  EPH_FILE              orbit.sp3
+
+% Data screening
+
+  EDIT_ELEV             10.0                      % Elevation cutoff angle [deg]
+  EDIT_RES              0.30                      % Editing limit [m]
+% EDIT_RES              100                       % Editing limit [m]
+
+% exclude station problems
+
+%  EXCLUDE_SOD           18799401    % Altay
+%  EXCLUDE_SOD           74031306    % Arequipa
+%  EXCLUDE_SOD           18869601    % Arkhyz
+%  EXCLUDE_SOD           18900901    % Badary
+% EXCLUDE_SOD           72496102    % Beijing
+%  EXCLUDE_SOD           78113802    % Borowiec
+%  EXCLUDE_SOD           74072701    % Brazilia
+%  EXCLUDE_SOD           72371901    % Changchun
+% EXCLUDE_SOD           78457801    % Grasse
+%  EXCLUDE_SOD           18915301    % Irkutsk
+%  EXCLUDE_SOD           18931801    % Katzively
+%  EXCLUDE_SOD           18248101    % Kiev
+%  EXCLUDE_SOD           18685901    % Komsomolsk
+% EXCLUDE_SOD           70802419    % Mcdonald
+%  EXCLUDE_SOD           18748301    % Mendeleev2
+% EXCLUDE_SOD           71240802    % Papeete
+%  EXCLUDE_SOD           18844401    % Riga
+% EXCLUDE_SOD           78244502    % San Fernan
+%  EXCLUDE_SOD           73942601    % Sejong
+%  EXCLUDE_SOD           18734901    % Simeiz
+% EXCLUDE_SOD           78383603    % Simosato
+%  EXCLUDE_SOD           18889801    % Svetloe
+%  EXCLUDE_SOD           18899901    % Zelenchuks
+% EXCLUDE_SOD           78393402  % Graz       GRAZ
+% EXCLUDE_SOD           71050725  % Greenbelt  TLRS
+% EXCLUDE_SOD           71191402  % Haleakala  TLRS
+% EXCLUDE_SOD           75010602  % Hartebeest MTLR
+% EXCLUDE_SOD           78403501  % Herstmonce RGO
+% EXCLUDE_SOD           79417701  % Matera     MLRO
+% EXCLUDE_SOD           71100412  % Monument p
+% EXCLUDE_SOD           78259001  % Mount Stro STR2
+% EXCLUDE_SOD           78418701  % Potsdam    GFZL
+% EXCLUDE_SOD           78212801  % Shanghai   SO F
+% EXCLUDE_SOD           78272201  % Wettzell   SOSW
+% EXCLUDE_SOD           88341001  % Wettzell   WLRS
+% EXCLUDE_SOD           70900513  % Yarragadee MOBL
+% EXCLUDE_SOD           78106801  % Zimmerwald SWI2
+% EXCLUDE_SOD           78208201  % Kunming    KUNM
+
+% Spacecraft parameters
+
+  SC_ID_ILRS            1306702                   % ILRS Satellite identification
+  SC_ID_SP3             L47                       % SP3 spacecraft identifier
+  SC_NAME               Swarm-A
+
+% Processing options
+
+  PRINT_NORMAL_POINTS
+  PLOT_BETA_ANGLE
+
+% Laser Retro Reflector information
+
+  SC_DESCRIPTOR_FILE    <DIRECTORY CONTAINING SWAmacro>/SWAmacro.scd
+
+% Range correction information for Laser Retroreflector Array (optional)
+
+  LRA_FILE              <PATH TO GHOST DIRECTORY>/GHOST/Global/GFZ.lra
+
+% Position correction
+
+  RTN_OFFSET            +0.0000  +0.0000  +0.0000
+
+% S/C orientation
+ 
+% ATTITUDE              NADIR_FORWARD
+
+  ATTITUDE              QUATERNION
+  ATT_FILE              <SWARM ATTITUDE DATA PATH>/SA_{yyyy}_{doy}.att
+  
+% Coordinates of the station
+
+  STATION_FILE          <PATH TO GHOST DIRECTORY>/GHOST/Global/Station_SLRF2020.snx
+  OCEAN_LOADING_FILE    <PATH TO GHOST DIRECTORY>/GHOST/Global/OLOAD_SLR_GOT00_2.BLQ
+
+% Earth rotation parameters
+
+  LEAPS_FILE            <PATH TO GHOST DIRECTORY>/GHOST/Global/leapsec.txt
+  EOP_FILE              <PATH TO EOP FILE>/code.erp

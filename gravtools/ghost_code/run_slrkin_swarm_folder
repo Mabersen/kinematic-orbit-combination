@@ -1,0 +1,100 @@
+#!/bin/csh
+
+### Check if the correct number of arguments is provided
+if ($#argv != 3) then
+    echo "Usage: $0 input_directory output_directory satellite_id"
+    echo "Example: $0 /path/to/sp3k_files /path/to/output A"
+    exit 1
+endif
+
+### Define input arguments
+set input_dir = $1       # Directory containing .sp3k files
+set output_dir = $2      # Directory for output log files
+set satellite_id = $3    # Satellite ID (e.g., A, B, C)
+
+### Define directories
+set EXE = <GHOST DIR>
+set GHOST = $EXE/GHOST
+
+### Define satellite name using the provided ID
+set isat = SWARM{$satellite_id}
+
+### Check if the input directory exists
+if (! -d $input_dir) then
+    echo "Error: Input directory $input_dir does not exist."
+    exit 1
+endif
+
+### Move to the input directory
+cd $input_dir
+
+### Loop through all .sp3k files in the input directory
+foreach file (GSWARM_*.sp3k)
+    echo "Processing file: $file"
+
+    ### Extract fields from the filename
+    ### Assumes filenames are in the format: GSWARM_<orbit_type>_<reference_data>_<satellite_id>_<analysis_centre>_<date_doy>.sp3k
+    set filename = `basename $file .sp3k`  # Remove .sp3k suffix
+    echo $filename
+    set parts = (`echo $filename | awk -F'_' '{print $1, $2, $3, $4, $5, $6}'`)  # Split by '_'
+    set orbit_type = $parts[2]        # Orbit type (e.g., kinematic)
+    set reference_data = $parts[3]
+    set file_satellite_id = $parts[4] # Satellite ID from filename
+    set analysis_centre = $parts[5]   # Analysis centre (e.g., AC1)
+    set date_doy = $parts[6]          # Combined date and doy (e.g., 2023009)
+    
+    ### Check if the satellite ID matches
+    if ($file_satellite_id != $satellite_id) then
+        echo "Skipping file $file: Satellite ID $file_satellite_id does not match input $satellite_id."
+        continue
+    endif
+
+    ### Split date_doy into year and doy
+    set year = `echo $date_doy | cut -c1-4`  # First 4 characters are the year
+    set doy = `echo $date_doy | cut -c5-7`   # Last 3 characters are the doy
+
+    ### Check if year and doy are valid
+    if ($year == "" || $doy == "") then
+        echo "Error: Could not extract year and doy from filename: $file"
+        continue
+    endif
+
+    ### Convert kinematic file to equidistant sampling
+    $EXE/sp3_to_equidist $file orbit.sp3 1
+    if ($status != 0) then
+        echo "Error: Failed to convert $file to equidistant sampling."
+        continue
+    endif
+
+    ### SLRRES
+    set output_prefix = "GSWARM_{$orbit_type}_{$reference_data}_{$isat}_{$analysis_centre}_{$date_doy}_SLRRES"  # Use double quotes for safe variable expansion
+    rm -f {$output_prefix}.inp
+    rm -f $output_dir/{$output_prefix}.log
+    awk -f $EXE/create_setup.awk -v year=$year -v doy=$doy <PATH TO MINP FILES>/{$isat}_SLRRES.minp > {$output_prefix}.inp
+    if ($status != 0) then
+        echo "Error: Failed to create SLRRES input file for $file."
+        continue
+    endif
+
+    echo "Running SLRRES for $file"
+    $GHOST/SLRRES -i {$output_prefix}.inp >& $output_dir/{$output_prefix}.log
+    if ($status != 0) then
+        echo "Error: SLRRES failed for $file."
+        continue
+    endif
+
+    ### Convert plot to PDF
+    ps2pdf {$output_prefix}.ps $output_dir/{$output_prefix}.pdf
+    if ($status != 0) then
+        echo "Error: Failed to convert PS to PDF for $file."
+        continue
+    endif
+
+    ### Clean up intermediate files
+    rm -f {$output_prefix}.ps
+
+    echo "Finished processing $file"
+    echo "----------------------------------------"
+end
+
+echo "All files processed."
