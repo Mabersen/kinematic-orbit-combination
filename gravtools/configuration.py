@@ -24,7 +24,7 @@ import os
 paths = {
     
     
-    "root": r"E:\thesis\kinematic-orbit-combination\gravtools", # REPLACE WITH GRAVTOOLS DIRECTORY ABS PATH
+    "root": r"<YOUR GRAVTOOLS DIRECTORY>", # REPLACE WITH GRAVTOOLS DIRECTORY ABS PATH
     
     "KO": {
         "AIUB": r"data/orbits/KO/AIUB",
