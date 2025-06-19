@@ -82,7 +82,7 @@ save_methods_ref = [m.replace('_', '') for m in methods_ref]  # Remove all under
 
 sat_id = 'A'  # Preserve satellite ID format in filenames
 path= os.path.join(paths["root"], paths["CO"])
-path2 = r'E:\thesis\data\orbits\CO\ultrafinal_data\2023\invar_vce problems'
+path2 = r'output'
 # path2 = r'E:\thesis\data'
 path = os.path.join(path, path2)
 
@@ -95,12 +95,8 @@ filtering_threshold = 0.3
 startdates = [datetime(year, month, 1) for year in [2023] for month in range(1,2)]
 orbit_duration = MonthBegin(1)  # Set orbit duration
 # %%
-# startdates= [datetime(2023,1,1)]#, datetime(2022,2,10), datetime(2022,2,20), datetime(2022,2,16),
-            # datetime(2022,2,28)] 
-# orbit_duration = MonthBegin(1)
-# orbit_duration = timedelta(days = 1)
-# 
-get_data = False
+
+get_data = True
 # Generate access requests for KO and RDO data
 i1_req = generate_access_requests("KO", startdates, analysis_centre=["IFG", "AIUB", "TUD"], get_data=get_data, orbit_duration=orbit_duration, satellite_ids=satellite_ids)
 i2_req = generate_access_requests("RDO", startdates, analysis_centre=["ESA", "IFG"], get_data=get_data, orbit_duration=orbit_duration, satellite_ids=satellite_ids)
@@ -111,14 +107,8 @@ i1 = [retrieve_arcs(i) for i in i1_req]
 input_data = [i[satellite_ids[0]] for i in i1]
 
 #%%
-inp_datcheck = [i.trajectory for i in input_data[0]]
-
-#%%
 i2 = [retrieve_arcs(i) for i in i2_req]
 reference_data = [i[satellite_ids[0]] for i in i2]
-#%%
-ref_datcheck = [i.trajectory for i in reference_data[0]]
-
 # %% Process data
 output_data_noref = []
 output_data_ref = []
