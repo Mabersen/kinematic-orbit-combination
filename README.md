@@ -27,38 +27,40 @@ If you wish to go further and make use of the SLR validation tools, you need acc
 
 ## Structure
 
+```text
 gravtools/
 ├── README.md
+├── CITATION.CFF
 ├── environment.yaml                # Conda environment
 ├── configuration.py                # Centralised paths and constants
 ├── combination_config.yaml         # Input configuration file for pipeline
 ├── orbit_combination_pipeline.py   # Main orbit combination pipeline
 ├── data_utilities/
-│   ├── parsing_utils.py       # Parser and SP3K writer
-│   ├── retrieve_data.py       # Downloads KO/RDO orbits
-│   └── tudat_utilities.py     # Utilities using the tudat package
+│   ├── parsing_utils.py               # Parser and SP3K writer
+│   ├── retrieve_data.py               # Downloads KO/RDO orbits
+│   └── tudat_utilities.py             # Utilities using the tudat package
 ├── kinematic_orbits/
-│   ├── produce_results.py                # Pipeline script with user control
-│   ├── combine_orbits.py                 # Combination methods
-│   ├── retrieve_arcs.py                  # Retrieves KO/RDO arcs
-│   ├── classes.py                        # AccessRequest and Arc classes
-│   ├── pygmo_optimiser.py                # Pygmo optimiser implementation
-│   ├── pygmo_optimiser_independent.py    # Independent optimisation implementation
-│   ├── plotting_functions.py             # Plotting helpers for orbits
-│   ├── frame_utilties.py                 # Frame conversion utilities for orbits
-│   └── kinematic_utilities.py            # General kinematic orbit utilities
+│   ├── produce_results.py             # Pipeline script with user control
+│   ├── combine_orbits.py              # Combination methods
+│   ├── retrieve_arcs.py               # Retrieves KO/RDO arcs
+│   ├── classes.py                     # AccessRequest and Arc classes
+│   ├── pygmo_optimiser.py             # Pygmo optimiser implementation
+│   ├── pygmo_optimiser_independent.py # Independent optimisation implementation
+│   ├── plotting_functions.py          # Plotting helpers for orbits
+│   ├── frame_utilties.py              # Frame conversion utilities for orbits
+│   └── kinematic_utilities.py         # General kinematic orbit utilities
 ├── verification/
-│   ├── run_verification_tests.py       # Synthetic orbit testing
-│   ├── verify_rdo_fit.py               # Residuals vs RDO reference
-│   ├── plot_verification_results.py    # Visual diagnostic plots
-│   ├── variance_verification.py        # Tests uncertainty propagation
-│   └──  verification_utilities.py      # Utilities for verification
+│   ├── run_verification_tests.py      # Synthetic orbit testing
+│   ├── verify_rdo_fit.py              # Residuals vs RDO reference
+│   ├── plot_verification_results.py   # Visual diagnostic plots
+│   ├── variance_verification.py       # Tests uncertainty propagation
+│   └── verification_utilities.py      # Utilities for verification
 ├── SLR/
 │   ├── process_normal_points.py          # SLR residual validation + plots
 │   ├── slr_variance_validation.py        # LOS projection + uncertainty validation + output plotting
 │   ├── variance_validation_plotting.py   # Plot functions for variance validation
 │   └── sinex_station_loader.py           # Parses SINEX station info
-├── data/                         # Root data directory
+├── data/
 │   ├── orbits/
 │   │   ├── KO/
 │   │   │   ├── AIUB/
@@ -75,12 +77,13 @@ gravtools/
 │   │       │   ├── 48/
 │   │       │   └── 49/
 │   │       └── ...
-│   │   
 │   ├── gravity field models/     # GFM output folder (not currently in use)
 │   └── SLR/
 │       ├── stations/             # SINEX station info
 │       └── [normal point files]  # GHOST residuals and timescales from generated orbits
 └── output/ (optional)            # Can contain result SP3K or figures
+```
+
 
 
 ## Usage
