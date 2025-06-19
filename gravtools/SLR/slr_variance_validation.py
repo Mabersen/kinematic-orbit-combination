@@ -17,21 +17,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 # Custom SINEX parser from previous steps
-from sinex_station_loader import SINEXStationHandler, MultiSINEXStationHandler
-from variance_verification_plotting import * #(plot_residuals_vs_sigma, plot_reduced_chi2_bar,
-                                            # plot_histograms_norm_residuals, load_sigma_data_and_metrics)
+from gravtools.SLR.sinex_station_loader import MultiSINEXStationHandler
+from gravtools.SLR.variance_validation_plotting import *
+from gravtools.kinematic_orbits.retrieve_arcs import retrieve_arcs
+from gravtools.data_utilities.tudat_utilities import resample_with_gap_handling_with_epochs
+from gravtools.kinematic_orbits.classes import AccessRequest
+from gravtools.configuration import get_path
+
 import os
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
-from astropy.coordinates import EarthLocation, SkyCoord
 from tqdm import tqdm
-
-from gravtools.kinematic_orbits.retrieve_arcs import retrieve_arcs
-from gravtools.tudat_utilities import resample_with_gap_handling_with_epochs
-from gravtools.kinematic_orbits.classes import AccessRequest
 from pathlib import Path
 
 # Station mapping loader and mapping functions
@@ -515,7 +514,7 @@ window_stop = window_start + timedelta(days=60)
 satellite_id = ['47']
 
 # Load SINEX station data
-sinex_file_dir = r'..\..\data\SLR\stations'
+sinex_file_dir = os.path.join(get_path('SLR'), 'stations')
 sinex_file_list = [os.path.join(sinex_file_dir, i) for i in os.listdir(sinex_file_dir) if i.endswith('.snx')]
 station_handler = MultiSINEXStationHandler(sinex_file_list)
 

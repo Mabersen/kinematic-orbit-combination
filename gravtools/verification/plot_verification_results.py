@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-from verification_utilities_styled import (plot_test1_rmse, plot_test2_rmse, plot_test3_rmse, plot_test4_rmse, 
+from verification_utilities import (plot_test1_rmse, plot_test2_rmse, plot_test3_rmse, plot_test4_rmse, 
                                            plot_test41_2_rmse, plot_test5_rmse, plot_test6_rmse, plot_test7_rmse, 
                                            plot_test8_rmse, plot_test9_rmse, plot_test10_rmse)
 np.random.seed(42)  # fixing seed
@@ -129,8 +129,6 @@ input_scale9 = [1]
 
 # % Verification test 10 gen size
 n_gen10 = [1, 3, 10, 15, 20, 25, 40]
-
-# input_bias = (np.random.random(3) - 0.5)/5
 input_scale = [1]
 # %% Load reference data
 plot_reference_orbit = pd.read_csv(f'{savedir_ver}/plot_reference_orbit.csv')
@@ -153,8 +151,7 @@ verification_results32 = np.load(f'{savedir_ver}/verification32.npy', allow_pick
 # ----------------------------------------------------------------------------------------
 verification_results41 = np.load(f'{savedir_ver}/verification41.npy', allow_pickle=True)
 verification_results41_2 = [[i[2] for i in verification_results41]]
-# verification_results42 = np.load(f'{savedir_ver}/verification41.npy', allow_pickle=True)
-# verification_results42_2 = [[i[0] for i in verification_results42]]
+
 verification_results5 = np.load(f'{savedir_ver}/verification5.npy', allow_pickle=True)
 verification_results6 = np.load(f'{savedir_ver}/verification6.npy', allow_pickle=True)
 verification_results71 = np.load(f'{savedir_ver}/verification71.npy', allow_pickle=True)
@@ -177,46 +174,35 @@ verification_results101_20 = np.load(f'{savedir_ver}/extra_seed_new/verification
 verification_results102_20 = np.load(f'{savedir_ver}/extra_seed_new/verification102_2_20.npy', allow_pickle=True)
 
 # %% Plotting results
-# %%Test 1: Symmetric corruption
-# plot_test1_rmse(verification_results1, plot_reference_orbit, n_orbits1, methods[:])
+# %% Test 1: Symmetric corruption
 plot_test1_rmse(verification_results1, plot_reference_orbit, n_orbits1, methods[0:4] + methods[4::2])
 plot_test1_rmse(verification_results1, plot_reference_orbit, n_orbits1, methods[5::2])
 # %% Test 2: Asymmetric corruption
 
-# plot_test2_rmse(verification_results2, plot_reference_orbit, n_orbits2, test_description2, methods[:])
 plot_test2_rmse(verification_results2, plot_reference_orbit, n_orbits2, test_description2, methods[0:4] + methods[4::2])
-# plot_test2_rmse(verification_results2, plot_reference_orbit, n_orbits2, test_description2, methods[4::2])
 plot_test2_rmse(verification_results2, plot_reference_orbit, n_orbits2, test_description2, methods[5::2])
 # %% Test 3: 20 random seeds, pygmo
 plot_test3_rmse(verification_results32, plot_reference_orbit, seed_list3, methods[0:4] + methods[4::2])
-# plot_test3_rmse(verification_results31, plot_reference_orbit, seed_list3, methods[4::2])
-# plot_test3_rmse(verification_results31, plot_reference_orbit, seed_list3, methods[6::4])
 plot_test3_rmse(verification_results32, plot_reference_orbit, seed_list3, methods[5::2])
 
-# %%Test 3: 20 random seeds, input orbits
-# plot_test3_rmse(verification_results32, plot_reference_orbit, seed_list3, methods[0:4])
+# %% Test 3: 20 random seeds, input orbits
+plot_test3_rmse(verification_results31, plot_reference_orbit, seed_list3, methods[0:4])
 plot_test3_rmse(verification_results31, plot_reference_orbit, seed_list3, methods[4::2])
 plot_test3_rmse(verification_results31, plot_reference_orbit, seed_list3, methods[5::2])
 
-# %%Test 4-1: Different bias scales
+# %% Test 4-1: Different bias scales
 plot_test4_rmse(verification_results41, plot_reference_orbit, n_bias4, methods[0:3] + methods[3:4] + methods[5::2], bias_lengths=len_bias4)
 plot_test4_rmse(verification_results41, plot_reference_orbit, n_bias4, methods[4::2], bias_lengths=len_bias4)
-# plot_test4_rmse(verification_results41, plot_reference_orbit, n_bias4, methods[3:4] + methods[5::2], bias_lengths=len_bias4)
 
 # %% Test 4-2: Bias with different n orbits
 plot_test41_2_rmse(verification_results41_2, plot_reference_orbit, len_bias4, methods[:3], bias_scale = n_bias4[2])
 plot_test41_2_rmse(verification_results41_2, plot_reference_orbit, len_bias4, methods[3:], bias_scale = n_bias4[2])
-# plot_test4_rmse(verification_results41_2, plot_reference_orbit, len_bias4, methods[0:3], bias_lengths=len_bias4)
-# plot_test4_rmse(verification_results41_2, plot_reference_orbit, len_bias4, methods[4::2], bias_lengths=len_bias4)
-# plot_test4_rmse(verification_results41_2, plot_reference_orbit, len_bias4, methods[3:4] + methods[5::2], bias_lengths=len_bias4)
 
-# %%Test 5: Number of generations MUST ADJUST FOR CORRECT PLOTS
+# %% Test 5: Number of generations
 plot_test5_rmse(verification_results5, plot_reference_orbit, n_generations5, test56_methods[0:1] + test56_methods[2::2])
 plot_test5_rmse(verification_results5, plot_reference_orbit, n_generations5,
                 test56_methods[1::2])
-# plot_test5_rmse(verification_results5, plot_reference_orbit, n_generations5, test56_methods[2:4] + test56_methods[6::3])
 # %%Test 6: Population size
-# plot_test6_rmse(verification_results6, plot_reference_orbit, n_pop, test56_methods)
 plot_test6_rmse(verification_results6, plot_reference_orbit, n_pop6, test56_methods[0:1] + test56_methods[2::2])
 plot_test6_rmse(verification_results6, plot_reference_orbit, n_pop6,
                 test56_methods[1::2])
@@ -232,17 +218,17 @@ plot_test7_rmse(verification_results71, plot_reference_orbit7, n_arclength7, met
 # plot_test8_rmse(verification_results82, itrs_to_gcrs(
 #     reference_orbit[0].trajectory), n_orbits8, methods)
 
-# %%Plot test 9: Optimiser results; local and global
+# %% Plot test 9: Optimiser results; local and global
 plot_test9_rmse(verification_results91_1, plot_reference_orbit, n_pop9, test9_methods[:])
 plot_test9_rmse(verification_results92_1, plot_reference_orbit, n_pop9, test9_methods_LO)
 
 plot_test9_rmse(verification_results91_2, plot_reference_orbit, n_pop9, test9_methods[:])
 plot_test9_rmse(verification_results92_2, plot_reference_orbit, n_pop9, test9_methods_LO)
 
-# %%Plot test 10: Optimiser results; local and global
-#42
+# %% Plot test 10: Optimiser results; local and global
+# 42
 plot_test10_rmse(verification_results101_42, plot_reference_orbit, n_gen10, test9_methods[:])
 plot_test10_rmse(verification_results102_42, plot_reference_orbit, n_gen10, test9_methods_LO)
-#20
+# 20
 plot_test10_rmse(verification_results101_20, plot_reference_orbit, n_gen10, test9_methods[:])
 plot_test10_rmse(verification_results102_20, plot_reference_orbit, n_gen10, test9_methods_LO)

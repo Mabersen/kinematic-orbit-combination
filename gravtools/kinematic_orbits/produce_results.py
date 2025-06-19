@@ -21,12 +21,13 @@ limitations under the License.
 import os
 import pandas as pd
 from datetime import datetime, timedelta
-from combine_orbits import combine_arcs
-from classes import AccessRequest
-from retrieve_arcs import retrieve_arcs
-from parsing_utils import save_sp3k
 
-from configuration import paths
+from gravtools.kinematic_orbits.combine_orbits import combine_arcs
+from gravtools.kinematic_orbits.classes import AccessRequest
+from gravtools.kinematic_orbits.retrieve_arcs import retrieve_arcs
+from gravtools.data_utilities.parsing_utils import save_sp3k
+from gravtools.configuration import paths
+
 from pandas.tseries.offsets import MonthBegin
 from gravtools.kinematic_orbits.plotting_functions import plot_orbit_gaps, plot_orbit_residuals
 

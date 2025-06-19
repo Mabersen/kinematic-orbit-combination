@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Berendsen
+    given-names: Mattijs
+title: "Swarm Combined Kinematic Orbit Toolbox"
+version: 2.0.4
+identifiers:
+  - type: doi
+    value: 10.4121/03c249d6-674c-47cf-918f-1ef9bdafe749
+date-released: 2025-06-20

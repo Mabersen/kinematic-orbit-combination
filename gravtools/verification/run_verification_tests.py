@@ -23,11 +23,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
-from combine_orbits import combine_arcs
-from classes import Arc, AccessRequest
-from retrieve_arcs import retrieve_arcs
-from frame_utilities import itrs_to_gcrs
-from utilities import generate_pink_noise_with_std
+from gravtools.kinematic_orbits.combine_orbits import combine_arcs
+from gravtools.kinematic_orbits.classes import Arc, AccessRequest
+from gravtools.kinematic_orbits.retrieve_arcs import retrieve_arcs
+from gravtools.kinematic_orbits.frame_utilities import itrs_to_gcrs
+from gravtools.verification.verification_utilities import generate_pink_noise_with_std
 
 # This file uses Gaussian white noise
 plt.rcParams.update({'font.size': 14})

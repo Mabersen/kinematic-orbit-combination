@@ -2127,11 +2127,10 @@ def plot_avg_obs_and_rms_per_station(df, site_col='Site', obs_col='n', res_col='
 #%%
 # FINAL DATA
 gap_filter_path = None
-#%% 
+#%% EXAMPLE YEAR 2023 PROVIDED
 np_csv_path = Path(
-     r"normal_points\all_normal_points.csv")
+     r"normal_points\all_normal_points_2023.csv")
 gap_filter_path = Path(r"normal_points\timescales")
-axis_split = 0
 #%%
 print("Loading and cleaning data...")
 slr_data = load_and_clean_data(np_csv_path, gap_dir=gap_filter_path, trim_seconds=11)
@@ -2239,7 +2238,7 @@ plot_daily_rms_trend(filtered_daily_metrics, 'Unweighted_RMS')
 daily_check_konf =  daily_check1[daily_check1['Reference_Data'].isin(['KONF'])]
 
 # %% TESTING PARETO FRONT 
-thresholdcheck = 1
+thresholdcheck = 0
 
 if thresholdcheck:
     

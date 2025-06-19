@@ -23,7 +23,7 @@ from gravtools.kinematic_orbits.classes import AccessRequest, Arc
 from datetime import datetime, timedelta
 from gravtools.data_utilities.parsing_utils import parse_orbit_file
 from gravtools.data_utilities.retrieve_data import get_data
-from gravtools.tudat_utilities import resample_with_gap_handling, resample_without_gap_handling
+from gravtools.data_utilities.tudat_utilities import resample_with_gap_handling, resample_without_gap_handling
 from gravtools.configuration import paths, get_path
 
 

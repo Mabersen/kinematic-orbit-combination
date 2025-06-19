@@ -1,0 +1,16 @@
+name: orbit-combination
+channels:
+  - conda-forge
+  - tudat-team
+dependencies:
+  - tudatpy
+  - matplotlib
+  - scipy
+  - pandas
+  - astropy
+  - spyder
+  - numpy<2.0.0
+  - pip
+  - pip:
+    - astroquery>=0.4.8.dev9306
+

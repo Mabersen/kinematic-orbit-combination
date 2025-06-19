@@ -1,0 +1,21 @@
+# # combination_config.yaml
+# Configuration for orbit combination and saving
+
+satellite_id: '47'                     # 47, 48, 49 for SWA, SWB, SWC respectively
+start_date: '2023-01-01'
+days: 1                                # Optional
+# months: 1                            # Mutually exclusive with 'days'
+
+methods:
+  no_ref: ['inverse_variance']         # See readme for all methods
+  with_ref: []
+
+save:                                  # Optionally save input KO and RDO's for use with SLRRES
+  kinematic: true
+  reference: true
+  combined: true
+
+filtering_threshold: 0.3               # The maximum allowed 3D difference WRT. RDO (m)
+input_centres: ['IFG', 'AIUB', 'TUD']
+reference_centres: ['ESA']             # Reference RDO
+output_path: ''                        # Leave as '' to use default values

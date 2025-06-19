@@ -1,42 +1,50 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Oct  2 13:09:09 2024
-
-@author: maber
+configuration.py
+ 
+Copyright 2025 Mattijs Berendsen
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+    http://www.apache.org/licenses/LICENSE-2.0
+ 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
+
+
 import os
+
 """ This dictionary should contain absolute paths to the data of different analysis centres."""
 paths = {
-    "root": r"E:\thesis\data",
+    
+    
+    "root": r"E:\thesis\kinematic-orbit-combination\gravtools", # REPLACE WITH GRAVTOOLS DIRECTORY ABS PATH
+    
     "KO": {
-        "AIUB": r"orbits/KO/AIUB",
-        "IFG": r"orbits/KO/IFG",
-        "TUD": r"orbits/KO/TUD",
-        'ESA': r"orbits/KO/ESA",
-        'JOSE': r"orbits/KO/JOSE",
-        'INP': r"orbits/KO/INP"
+        "AIUB": r"data/orbits/KO/AIUB",
+        "IFG": r"data/orbits/KO/IFG",
+        "TUD": r"data/orbits/KO/TUD",
+        "CO": r"data/orbits/KO/CO",
+        "INP": r"data/orbits/KO/INP"
     },
-    "CO": r"orbits/CO",
-    "CORS": r"orbits/CORS",
-    "CORR": r"orbits/CORR",
-    
-     "TEST": r"orbits\TEST",
-    
     "RDO": {
-        "IFG": r"orbits/RDO/IFG",
-        "ESA": r"orbits/RDO/ESA",
-        "INP": r"orbits/RDO/INP"
+        "IFG": r"data/orbits/RDO/IFG",
+        "ESA": r"data/orbits/RDO/ESA",
+        "INP": r"data/orbits/RDO/INP"
     },
-    "GFM": r"gravity field models"
+    "SLR": r"data/SLR",
+    "GFM": r"data/gravity field models"
 }
-
-""" If it is chosen to have a predefined file structure, this could be created using separate code, and to ensure
-consistency with code built using the aforementioned dictionary, the dictionary could be initiated using this file
-structure."""
 
 
 def get_path(data_type: str,
-             analysis_centre: str = None
+             subfolder: str = None
              ):
     """
     Get path to data.
@@ -45,8 +53,8 @@ def get_path(data_type: str,
     ----------
     data_type : str
         Type of the data, corresponding to the dictionary above (KO, RDO, etc.).
-    analysis_centre : str
-        Analysis centre, corresponding to the dictionary above (AIUB, IFG, etc.).
+    subfolder : str
+        Subfolder name corresponding to the dictionary above (AIUB, IFG, etc.).
 
     Returns
     -------
@@ -54,13 +62,12 @@ def get_path(data_type: str,
         Path to data.
 
     """
-    if analysis_centre:
-        return os.path.join(paths['root'], paths[data_type].get(analysis_centre, '_NONE_')).replace('\\', '/')
+    if subfolder:
+        return os.path.join(paths['root'], paths[data_type].get(subfolder, '_NONE_'))  # .replace('\\', '/')
     else:
-        return os.path.join(paths['root'], paths[data_type]).replace('\\', '/')
+        return os.path.join(paths['root'], paths[data_type])  # .replace('\\', '/')
+
 # Define the server details
-
-
 ftp_sources = {'tugraz': {'server_url': "ftp.tugraz.at",
                           'base_dir': "/outgoing/ITSG/satelliteOrbitProducts/operational",
                           'satellite_ids': {'47': 'Swarm-1',
@@ -79,35 +86,37 @@ https_sources = {'esa': {'server_url': "https://swarm-diss.eo.esa.int/#swarm%2FL
                                            '49': 'Sat_C'}}
                  }
 
-# ssh_sources = {'aristarchos': {'ssh_host': "aristarchos.lr.tudelft.nl",
-#                                'ssh_port': 22,
-#                                'username': input('Input your username:'),
-#                                'password': input('Input your password:'),
-#                                'base_dir': "/homea/gswarm/data"
-#                                }
-#                }
-
 ssh_sources = {'aristarchos': {'ssh_host': "aristarchos.lr.tudelft.nl",
                                'ssh_port': 22,
-                               'username': 'mattijs',
-                               # 'password': input('Input your password:'),
+                               'username': '<YOUR SERVER USERNAME>',
                                'base_dir': "/homea/gswarm/data"
                                }
                }
-# ssh_host = "aristarchos.lr.tudelft.nl"
-# ssh_port = 22
-# username = "mattijs"
-# password = ""
-# base_dir = "/homea/gswarm/data"
-# analysis_centres = ["ifg", "aiub", "tudelft"]
-# # analysis_centres = ["aiub"]
-# start_date = "2022-01-01"
-# end_date = "2022-01-10"
-# # local_save_dir = "./downloaded_sp3"
 
-# server_url = "ftp.tugraz.at"
-# base_dir = "/outgoing/ITSG/satelliteOrbitProducts/operational"
-# satellite_ids = ["Swarm-1", "Swarm-2", "Swarm-3"]
-# start_date = "2023-01-01"
-# end_date = "2023-01-10"
-# local_save_dir = get_path('RDO', 'IFG')
+def ensure_directory_structure(paths_dict):
+    """
+    Ensures that the folder structure specified in `paths_dict` exists.
+    Creates subfolders for satellite IDs (47, 48, 49) where applicable.
+    """
+    sat_ids = ['47', '48', '49']
+    for key, value in paths_dict.items():
+        if isinstance(value, dict):  # KO or RDO branches
+            for centre, rel_path in value.items():
+                base_path = os.path.join(paths_dict['root'], rel_path)
+                for sid in sat_ids:
+                    full_path = os.path.join(base_path, sid)
+                    os.makedirs(full_path, exist_ok=True)
+        else:  # GFM, etc.
+            base_path = os.path.join(paths_dict['root'], value)
+            os.makedirs(base_path, exist_ok=True)
+
+            if key == 'GFM':
+                # Gravity Field Models directory
+                os.makedirs(base_path, exist_ok=True)
+            if key == 'SLR':
+                # SLR base directory and stations subfolder
+                os.makedirs(os.path.join(base_path, 'stations'), exist_ok=True)
+
+if __name__ == '__main__':
+    
+    ensure_directory_structure(paths)

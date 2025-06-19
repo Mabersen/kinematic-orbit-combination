@@ -22,12 +22,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
-from classes import AccessRequest
-from retrieve_arcs import retrieve_arcs
 import seaborn as sns
 from functools import reduce
 from pandas.tseries.offsets import MonthBegin
+
 from gravtools.kinematic_orbits.plotting_functions import plot_orbit_components, plot_orbit_gaps, plot_orbit_residuals
+from gravtools.kinematic_orbits.classes import AccessRequest
+from gravtools.kinematic_orbits.retrieve_arcs import retrieve_arcs
 
 def generate_access_requests(data_type, startdates, analysis_centre=["IFG", "AIUB", "TUD"], get_data=False, orbit_duration = MonthBegin(1), satellite_ids = ['47']):
     requests = []
@@ -423,7 +424,7 @@ if not os.path.exists(summary_df_path):
 
 #%%
 residuals_base_path = r"results/"
-# recompute_summary_from_common_epochs(residuals_base_path)
+# recompute_summary_from_common_epochs(residuals_base_path) # Uncomment to run
 summary_csv = os.path.join(residuals_base_path, "residual_summary_stats.csv")
 df = pd.read_csv(summary_csv)
 plot_rms_with_errorbars(summary_csv)

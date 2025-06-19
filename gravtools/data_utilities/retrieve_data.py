@@ -22,14 +22,13 @@ import os
 import paramiko
 import ftplib
 from datetime import datetime, timedelta
-# from configuration import get_path, ftp_sources, ssh_sources, https_sources
-from gravtools.configuration import get_path, paths, ftp_sources, ssh_sources, https_sources
-from gravtools.kinematic_orbits.classes import AccessRequest
 import gzip
 from zipfile import ZipFile
 import shutil
 import requests
 
+from gravtools.configuration import get_path, paths, ftp_sources, ssh_sources, https_sources
+from gravtools.kinematic_orbits.classes import AccessRequest
 
 def download_RDO_IFG(satellite_ids, start_date, end_date):
     """
@@ -244,7 +243,7 @@ def download_sp3_ssh(analysis_centres, satellite_ids, start_date, end_date, user
     try:
         for centre in analysis_centres:
             datafound = False
-            local_save_dir = get_path(data_type='KO', analysis_centre=centre.upper())
+            local_save_dir = get_path('KO', centre.upper())
             centre_path = os.path.join(base_dir, analysis_centre_map_in[centre.upper()], "orbit").replace("\\", "/")
             try:
                 # List year folders in the analysis centre
