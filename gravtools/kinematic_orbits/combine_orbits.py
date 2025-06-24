@@ -132,7 +132,8 @@ def inverse_variance(dataframes, normalise=False):
         cov_combined = pd.Series(0, index=index)
         for i, df in enumerate(dataframes):
             # Check validity for both coordinates
-            valid_mask = valid_masks[i] & valid_masks[i]  # Already computed
+            # valid_mask = valid_masks[i] & valid_masks[i]  # Already computed
+            valid_mask = valid_masks[['x', 'y', 'z'].index(c1)][i] & valid_masks[['x', 'y', 'z'].index(c2)][i] # Must be tested
             w_product = weights[c1][i] * weights[c2][i]
             
             # Clean covariance values

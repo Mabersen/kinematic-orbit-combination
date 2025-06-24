@@ -1,0 +1,12 @@
+[workspace]
+restore_data_on_startup = True
+save_data_on_exit = True
+save_history = True
+save_non_project_files = False
+project_type = 'empty-project-type'
+recent_files = ['orbit_combination_pipeline.py', 'SLR\\slr_variance_validation.py', 'verification\\variance_verification.py', 'kinematic_orbits\\combine_orbits.py', 'configuration.py']
+
+[main]
+version = 0.2.0
+recent_files = []
+
